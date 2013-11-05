@@ -140,9 +140,9 @@ if not len(sys.argv) == 3:
 in_file = open(sys.argv[1], "r")
 out_file = open(sys.argv[2], "w")
 
-in_string = in_file.read()
+#in_string = in_file.read()
 
-ADT = PFile.parseString(in_string)[0]
+ADT = PFile.parseFile(in_file)[0]
 
 p = Printer(out_file)
 
