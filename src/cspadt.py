@@ -84,12 +84,15 @@ class ADTString:
 		printer.out(self.value)
 		printer.out("\"")
 		return environment
-		
-#ADT class for tuples
-class ADTTuple:
-	def __init__(self, values):
-		self.values = values
+	
+
+class ADTBinaryOperator:
+	def __init__(self, operator, expr1, expr2):
+		self.operator = operator
+		self.expr1 = expr1
+		self.expr2 = expr2
 		
 	def compile(self, printer, environment):
-		#create a python tuple
-	
+		pass
+
+		
