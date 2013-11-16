@@ -40,8 +40,10 @@ def makeNumber(string, pos, tok):
 PNumber = (Word(nums) + Optional(Literal(".") + OneOrMore(nums))).setParseAction(makeName)
 
 # -- Parameterization options --
-# Parameterized -> Name<Expression,Expression> | Name<Expression>
-PParameterized = PName + Literal("<") + (PExpression + ZeroOrMore(Literal(",") + PExpression)) + Literal(">")
+# Parameterized -> Name<Expression>
+PParameterized = PName + Literal("<") + PExpression + Literal(">")
+PRange = PName + Literal(":") + PExpression + Literal(":") + PExpression
+PForAll = Literal("for_all") + ListParser(PRange, Literal(",")) + Literal("{") + PParameterized + Literal("}")
 
 # -- Arithmetic --
 # Expression -> Product + Expression | Product - Expression | Product
