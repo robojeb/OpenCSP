@@ -179,10 +179,9 @@ class ADTProgram:
 #
 
 class ADTParameterized:
-	def __init__(self, name, parameter_1, parameter_2 = None):
+	def __init__(self, name, parameter_1):
 		self.name = name
 		self.param1 = parameter_1
-		self.param1 = parameter_2
 
 	def compile(self, printer, environment):
 		pass
