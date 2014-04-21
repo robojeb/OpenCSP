@@ -5,7 +5,7 @@ from DactylParser import DactylParser
 from DactylSemant import DactylASTSemantics
 from compilerpass import CompileError, UndefError
 from parampass import ParamPass, ParamInitPass
-from usedefpass import UseDef
+from usedefpass import UseDef, UseDefSecondPass
 
 p = DactylParser()
 
@@ -20,7 +20,9 @@ try:
 	ast1 = ast.accept(paramPass)
 	print ast1
 	ast1.accept(ParamInitPass())
-	ast1.accept(UseDef())
+	firstPass = UseDef()
+	ast1.accept(firstPass)
+	secPass = UseDefSecondPass(firstPass.symbols_)
 	#useDefPass = UseDef()
 	#ast1.accept(useDefPass)
 except CompileError as e:

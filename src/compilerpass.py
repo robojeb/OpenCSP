@@ -1,6 +1,6 @@
 from symboltable import SymbolTable
 from varinfo import *
-from adt import *
+from ast import *
 
 # Define an exception to show if something is undefined
 class UndefError(Exception):
@@ -75,5 +75,3 @@ class CompilerPass:
 
 	def visitParams(self, params):
 		raise UndefError("visitParams not defined")
-
-
