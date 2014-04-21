@@ -1,0 +1,67 @@
+file =  {oper:(assign | define | spawnop) ";"}+;
+
+
+define = n:name "::=" p:program;
+
+assign = n:name ":=" e:expr;
+
+
+(* All expression definitions *)
+
+expr = e1:exprAnd op:"||" e2:expr | e1:exprAnd;
+
+exprAnd = e1:exprEq op:"&&" e2:exprAnd | e1:exprEq;
+
+exprEq = e1:exprComp op:("==" | "!=") e2:exprEq | e1:exprComp;
+
+exprComp = e1:exprAdd op:(">=" | "<=" | ">" | "<") e2:exprComp | e1:exprAdd;
+
+exprAdd = e1:exprMul op:("+"|"-") e2:exprAdd | e1:exprMul;
+
+exprMul = e1:exprUni op:("*"|"/") e2:exprMul | e1:exprUni;
+
+exprUni = op:"!" e1:exprParen | e1:exprParen;
+
+exprParen = "(" e1:expr ")" | e1:value;
+
+value = number | string | name;
+
+int = num:?/[0-9]+/?;
+
+number = int "." int | int;
+
+string = ?/"(?:[^"\\]|\\.)*"/?;
+
+identifier = ?/[a-zA-Z_]+[a-zA-Z0-9_]*/?;
+
+name = ident:identifier "<" param:parameters ">" | ident:identifier;
+
+parameters = (expr | range) "," parameters | (expr | range);
+
+(*Sequences and other control flow *)
+
+program = "[" s:sequence "]";
+
+sequence = {oper:(assign | ifblk | loop) ";"};
+
+ifblk = "[" branches "]";
+
+loop = "*[" branches "]";
+
+branches = b1:branch {"|" bl:branch}*;
+
+branch = cond:expr "->" op:sequence;
+
+(*Semaphore operations*)
+
+semdef = "semaphore(" expr ")";
+
+semop = ("P" | "V") "(" name ")";
+
+(*Spawn operations*)
+
+spawnop = "spawn(" n:name ")";
+
+(* Range definition *)
+
+range = "[" int "," int "]";
