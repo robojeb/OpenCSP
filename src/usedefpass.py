@@ -6,7 +6,6 @@ from ast import *
 class UseDef(CompilerPass):
 	def __init__(self):
 		self.symbols_ = SymbolTable()
-		pass
 
 	def visitFile(self, f):
 		for op in f.operations_:
@@ -121,9 +120,11 @@ class UseDefSecondPass(CompilerPass):
 		# we have already checked all of the variable assignemnts
 		# just check for conflicts
 		exists, data = self.symbols_.lookup(assign.name_.name_)
-		if not exists:
+		if not exists and len(assign.name_.parameters_) == 0:
 			assign.expr_.accept(self)
 			self.symbols_.insert(assign.name_.name_, VarInfo())
+		elif not exists and len(assign.name_.parameters_) == 0:
+			raise CompileError("Parameterized variable can only be declared globally")
 		else:
 			assign.expr_.accept(self)
 
