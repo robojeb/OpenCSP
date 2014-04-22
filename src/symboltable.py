@@ -18,3 +18,5 @@ class SymbolTable:
 				return True, self.stack_[i][name]
 		return False, None
 
+	def depth(self):
+		return len(self.stack_)

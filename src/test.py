@@ -9,7 +9,7 @@ from usedefpass import UseDef, UseDefSecondPass
 
 p = DactylParser()
 
-with open("test.dac") as f:
+with open("./test.dac") as f:
 	text = f.read()
 
 ast = p.parse(text, rule_name="file", semantics=DactylASTSemantics(), comments_re="\(\*.*?\*\)")
@@ -23,6 +23,7 @@ try:
 	firstPass = UseDef()
 	ast1.accept(firstPass)
 	secPass = UseDefSecondPass(firstPass.symbols_)
+	ast1.accept(secPass)
 	#useDefPass = UseDef()
 	#ast1.accept(useDefPass)
 except CompileError as e:

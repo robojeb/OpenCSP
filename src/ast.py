@@ -13,8 +13,8 @@ class AbstractAST(object):
 		else:
 			return "Line: " + self.pos_[0] + " Col: " + self.pos_[1]
 
-''' 
-Top level file abstract data type 
+'''
+Top level file abstract data type
 Should contain all information for a single file of the language
 '''
 class ASTFile(AbstractAST):
@@ -76,7 +76,7 @@ class ASTAssign(AbstractAST):
 		return compPass.visitAssign(self)
 
 	def __repr__(self):
-		return str(self.name_) + "=" + str(self.expr_) 
+		return str(self.name_) + "=" + str(self.expr_)
 
 '''
 An assign operation for variables
@@ -91,7 +91,7 @@ class ASTDefine(AbstractAST):
 		return compPass.visitDefine(self)
 
 	def __repr__(self):
-		return str(self.name_) + "<-" + str(self.expr_) 
+		return str(self.name_) + "<-" + str(self.expr_)
 
 '''
 AST Types for if statements
@@ -244,7 +244,7 @@ class ASTSemOp(AbstractAST):
 		self.op_ = op
 
 	def accept(self, compPass):
-		return compPass.visitSemDef(self)
+		return compPass.visitSemOp(self)
 
 '''
 Spawn operation
@@ -313,5 +313,3 @@ class ASTParams(AbstractAST):
 			return str(self.name_) + ":" + str(self.params_)
 		else:
 			return str(self.name_) + ":" + str(len(self.rawParams_))
-
-

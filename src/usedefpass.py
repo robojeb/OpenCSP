@@ -39,7 +39,7 @@ class UseDef(CompilerPass):
 			self.symbols_.enterContext()
 			define.expr_.accept(self)
 			self.symbols_.leaveContext()
-		else:
+		elif data.type_ != VarType.Undef:
 			raise CompileError("Cannot redefine non-parameterized variable")
 
 	def visitIf(self, If):
@@ -81,9 +81,7 @@ class UseDef(CompilerPass):
 		raise UndefError("visitSemOp not defined")
 
 	def visitSpawn(self, spawn):
-		inDict, data = self.symbols_.lookup(spawn.prog_.name_)
-		if not inDict:
-			raise CompileError("Symbol: " + spawn.prog_.name_ + " not defined")
+		spawn.prog_.accept(self)
 
 	def visitParams(self, params):
 		if params.isDefine_:
@@ -97,6 +95,8 @@ class UseDef(CompilerPass):
 				expr.accept(self)
 				self.symbols_.leaveContext()
 			self.symbols_.leaveContext()
+		else:
+			self.symbols_.insert(params.name_, VarInfo(param=True))
 
 class UseDefSecondPass(CompilerPass):
 	def __init__(self, sym):
@@ -128,14 +128,9 @@ class UseDefSecondPass(CompilerPass):
 			assign.expr_.accept(self)
 
 	def visitDefine(self, define):
-		exists, data = self.symbols_.lookup(define.name_.name_)
-		if not exists:
-			self.symbols_.insert(define.name_.name_, VarInfo())
-			self.symbols_.enterContext()
-			define.expr_.accept(self)
-			self.symbols_.leaveContext()
-		else:
-			raise CompileError("Cannot redefine non-parameterized variable")
+		self.symbols_.enterContext()
+		define.expr_.accept(self)
+		self.symbols_.leaveContext()
 
 	def visitIf(self, If):
 		for b in If.branches_:
@@ -162,6 +157,10 @@ class UseDefSecondPass(CompilerPass):
 		inDict, data = self.symbols_.lookup(name.name_)
 		if not inDict:
 			raise CompileError("Symbol: " + name.name_ + " not defined")
+		elif (len(name.params_) > 0 and not data.parameterized_):
+			raise CompileError("Using non-parameterized variable " + name.name_ + " with parameter")
+		elif (name.params_ == None and data.parameterized_):
+			raise CompileError("Using parameterized variable " + name.name_ + " without parameter")
 
 	def visitRange(self, name):
 		raise UndefError("visitRange not defined")
@@ -173,9 +172,7 @@ class UseDefSecondPass(CompilerPass):
 		raise UndefError("visitSemOp not defined")
 
 	def visitSpawn(self, spawn):
-		inDict, data = self.symbols_.lookup(spawn.prog_.name_)
-		if not inDict:
-			raise CompileError("Symbol: " + spawn.prog_.name_ + " not defined")
+		spawn.prog_.accept(self)
 
 	def visitParams(self, params):
 		if params.isDefine_:
