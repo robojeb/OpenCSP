@@ -38,7 +38,7 @@ class UseDef(CompilerPass):
 			self.symbols_.enterContext()
 			define.expr_.accept(self)
 			self.symbols_.leaveContext()
-		elif data.type_ != VarType.Undef:
+		elif not data.undef_:
 			raise CompileError("Cannot redefine non-parameterized variable")
 
 	def visitIf(self, If):
@@ -66,9 +66,9 @@ class UseDef(CompilerPass):
 		inDict, data = self.symbols_.lookup(name.name_)
 		if not inDict:
 			if len(name.params_) > 0:
-				self.symbols_.insert(name.name_, VarInfo(t=VarType.Undef, param=True))
+				self.symbols_.insert(name.name_, VarInfo(undef=True, param=True))
 			else:
-				self.symbols_.insert(name.name_, VarInfo(t=VarType.Undef))
+				self.symbols_.insert(name.name_, VarInfo(undef=True))
 
 	def visitRange(self, name):
 		raise UndefError("visitRange not defined")
@@ -160,8 +160,13 @@ class UseDefSecondPass(CompilerPass):
 			raise CompileError("Symbol: " + name.name_ + " not defined")
 		elif (len(name.params_) > 0 and not data.parameterized_):
 			raise CompileError("Using non-parameterized variable " + name.name_ + " with parameter")
-		elif (name.params_ == None and data.parameterized_):
+		elif (name.params_ == [] and data.parameterized_):
 			raise CompileError("Using parameterized variable " + name.name_ + " without parameter")
+
+		# We need to usedef check the parameters of a variable too
+		for p in name.params_:
+			p.accept(self)
+
 
 	def visitRange(self, name):
 		raise UndefError("visitRange not defined")

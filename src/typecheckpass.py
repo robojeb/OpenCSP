@@ -20,3 +20,4 @@ class TypeDef(CompilerPass):
 
 	def visitAssign(self, assign):
 		exists, data = self.symbols_.lookup(assign.name_.name_)
+		pass
